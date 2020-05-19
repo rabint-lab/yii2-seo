@@ -1,0 +1,20 @@
+{
+    "name": "rabint/seo",
+    "type": "library",
+    "description": "rabint seo behavior",
+    "license": "rabint",
+    "authors": [{
+            "name": "rabint",
+            "email": "info@rabint.ir",
+            "homepage": "http://www.rabint.ir"
+        }
+    ],
+    "require": {
+        "rabint/base": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "rabint\\seo\\": ""
+        }
+    }
+}
