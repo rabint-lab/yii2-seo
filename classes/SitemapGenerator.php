@@ -5,17 +5,18 @@ namespace rabint\seo\classes;
 use Yii;
 
 /**
- * 	$sitemap = new ArticlesSitemap(); // must implement a SitemapInterface
- * 	$sitemapGenerator = new Sitemap([
- * 	 	'sitemaps' => [$sitemap],
- * 	 	'dir' => '@webRoot',
- * 	]);
- * 	$sitemapGenerator->generate();
+ *    $sitemap = new ArticlesSitemap(); // must implement a SitemapInterface
+ *    $sitemapGenerator = new Sitemap([
+ *        'sitemaps' => [$sitemap],
+ *        'dir' => '@webRoot',
+ *    ]);
+ *    $sitemapGenerator->generate();
  * ```
  *
  * @package common\components
  */
-class SitemapGenerator extends \yii\base\BaseObject {
+class SitemapGenerator extends \yii\base\BaseObject
+{
 
     /**
      * @var string directory for recording the site map file. You can use aliases.
@@ -41,11 +42,11 @@ class SitemapGenerator extends \yii\base\BaseObject {
 
     /**
      * @var int the maximum number of addresses in a single card.
-            * If the site map of addresses greater than a predetermined value,
-            * The sitemap will break into multiple site maps in such a way
-            * To each address was no longer than a predetermined value.
-            * If there is "0", the card will not break up into several and one card may be
-            * Unlimited number of addresses.
+     *       * If the site map of addresses greater than a predetermined value,
+     *       * The sitemap will break into multiple site maps in such a way
+     *       * To each address was no longer than a predetermined value.
+     *       * If there is "0", the card will not break up into several and one card may be
+     *       * Unlimited number of addresses.
      */
     public $maxUrlsCount = 45000;
 
@@ -55,15 +56,17 @@ class SitemapGenerator extends \yii\base\BaseObject {
     protected $items = [];
     protected $createdSitemaps = [];
 
-    function addItem($sitemap, $item) {
+    function addItem($sitemap, $item)
+    {
         $this->items[$sitemap][] = $item;
         return TRUE;
     }
 
-    function addItemToGeneratedSitemap($sitemap, $item) {
+    function addItemToGeneratedSitemap($sitemap, $item)
+    {
 //            $siteMapName = 'sitemap.' . $sitemap . '.xml';
         $siteMapName = 'sitemap';
-
+        $multipleSitemapFlag = false;
         $entity = static::generateEntity($item) . PHP_EOL;
         $filename = $multipleSitemapFlag ? "{$siteMapName}-{$i}.xml" : "{$siteMapName}.xml";
         $fullFilename = Yii::getAlias($this->dir) . '/' . $filename;
@@ -96,7 +99,8 @@ class SitemapGenerator extends \yii\base\BaseObject {
     /**
      * Creating a sitemap
      */
-    public function generate() {
+    public function generate()
+    {
         foreach ($this->sitemaps as $sitemap => $filename) {
             $this->createSitemap($sitemap, $filename);
         }
@@ -111,7 +115,8 @@ class SitemapGenerator extends \yii\base\BaseObject {
      *
      * @return string
      */
-    protected function createIndexSitemap() {
+    protected function createIndexSitemap()
+    {
         $sitemapIndex = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
         $sitemapIndex .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . PHP_EOL;
         $baseUrl = \rabint\helpers\uri::home();
@@ -143,7 +148,8 @@ class SitemapGenerator extends \yii\base\BaseObject {
      *
      * @return boolean
      */
-    protected function createSitemap($sitemap, $siteMapName = '') {
+    protected function createSitemap($sitemap, $siteMapName = '')
+    {
         if (empty($siteMapName)) {
             $siteMapName = 'sitemap.' . $sitemap . '.xml';
         }
@@ -199,13 +205,14 @@ EOT;
 
     /**
      * Splits an array of URLs in accordance with the $ this-> maxUrlsCount.
-           * Wrapping for array_chunk () function.
+     *      * Wrapping for array_chunk () function.
      *
      * @param array $urls
      *
      * @return array
      */
-    protected function chunkUrls(array $urls) {
+    protected function chunkUrls(array $urls)
+    {
         if (empty($this->maxUrlsCount)) {
             $result[] = $urls;
 
@@ -223,7 +230,8 @@ EOT;
      *
      * @return int
      */
-    protected function createSitemapFile($filename, $data) {
+    protected function createSitemapFile($filename, $data)
+    {
         $fullFilename = Yii::getAlias($this->dir) . '/' . $filename;
 
         return file_put_contents($fullFilename, $data);
@@ -234,7 +242,8 @@ EOT;
      *
      * @param array $urls
      */
-    protected static function sortByLastmod(array &$urls) {
+    protected static function sortByLastmod(array &$urls)
+    {
         $lastmod = [];
 
         foreach ($urls as $key => $row) {
@@ -244,7 +253,8 @@ EOT;
         array_multisort($lastmod, SORT_DESC, $urls);
     }
 
-    protected static function generateEntity($item, $level = 1, $parentKey = 'url') {
+    protected static function generateEntity($item, $level = 1, $parentKey = 'url')
+    {
         $url = '';
         $sep = str_repeat("\t", $level);
         if (!empty($parentKey)) {
@@ -276,7 +286,8 @@ EOT;
 
     /* =================================================================== */
 
-    function pingSitemap($sitemaps = null) {
+    function pingSitemap($sitemaps = null)
+    {
         $baseUrl = \rabint\helpers\uri::home();
         if ($sitemaps === NULL) {
             $this->ping($baseUrl . '/' . $this->indexFilename);
@@ -288,7 +299,8 @@ EOT;
         }
     }
 
-    function ping($url_xml, $search_engines = NULL) {
+    function ping($url_xml, $search_engines = NULL)
+    {
         $statuses = array();
         if (is_array($search_engines)) {
             foreach ($search_engines AS $engine) {
@@ -297,10 +309,10 @@ EOT;
                     $engine['url'] = empty($engine['url']) ? "/ping?sitemap=" : $engine['url'];
 
                     $req = 'GET ' . $engine['url'] .
-                            urlencode($url_xml) . " HTTP/1.1\r\n" .
-                            "Host: " . $engine['host'] . "\r\n" .
-                            config('SEO.sitemap.sitemaps_user_agent') .
-                            "Connection: Close\r\n\r\n";
+                        urlencode($url_xml) . " HTTP/1.1\r\n" .
+                        "Host: " . $engine['host'] . "\r\n" .
+                        config('SEO.sitemap.sitemaps_user_agent') .
+                        "Connection: Close\r\n\r\n";
                     fwrite($fp, $req);
                     while (!feof($fp)) {
                         if (@preg_match('~^HTTP/\d\.\d (\d+)~i', fgets($fp, 128), $m)) {
