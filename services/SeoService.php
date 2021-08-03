@@ -15,6 +15,8 @@ class SeoService
      */
     private static $schema = null;
 
+    private static $meta = [];
+
     public static function factory(){
         return new static();
     }
@@ -49,7 +51,7 @@ class SeoService
      * @param array $data
      * @return SeoService
      */
-    public function addData($data=[]){
+    public function setSchemaMeta($data=[]){
         $object = self::getSchema();
         foreach ($data as $key=>$value){
             $object->$key($value);
@@ -65,6 +67,48 @@ class SeoService
         if(self::$schema===null)
             return null;
         return self::$schema->toScript();
+    }
+
+    /**
+     * @return array
+     */
+
+    public function getAllMeta(){
+        return self::$meta;
+    }
+
+    /**
+     * @param $key
+     * @return mixed|null
+     */
+
+    public function getSeoMeta($key){
+        if(isset(self::$meta[$key]))
+            return self::$meta[$key];
+        return null;
+    }
+
+    /**
+     * @param $key
+     * @param $value
+     * @return bool
+     */
+
+    public function setSeoMeta($key,$value){
+        self::$meta[$key] = $value;
+        return true;
+    }
+
+    /**
+     * @return string
+     */
+
+    public function renderMeta(){
+        $return = '';
+        foreach (self::$meta as $key=>$value){
+            $return .='<meta name="'.$key.'" content="'.$value.'">';
+        }
+        return $return;
     }
 
 //    public function test(){
