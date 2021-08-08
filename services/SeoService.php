@@ -82,7 +82,7 @@ class SeoService
      * @return mixed|null
      */
 
-    public function getSeoMeta($key){
+    public static function getSeoMeta($key){
         if(isset(self::$meta[$key]))
             return self::$meta[$key];
         return null;
@@ -108,6 +108,13 @@ class SeoService
         foreach (self::$meta as $key=>$value){
             $return .='<meta name="'.$key.'" content="'.$value.'">';
         }
+        return $return;
+    }
+
+    public function renderHeadSeo(){
+        $return = '';
+        $return .= $this->renderSchema();
+        $return .= $this->renderMeta();
         return $return;
     }
 
