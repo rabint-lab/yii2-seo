@@ -15,9 +15,10 @@ class schemaBehavior extends Behavior
         $object = '\Spatie\SchemaOrg\Schema::'.$this->schemaObject;
         $schima = \rabint\seo\services\SeoService::factory()->setSchema($object());
         foreach ($this->map as $key => $value){
-            if(is_callable($value))
+            if(is_callable($value)){
                 $val = $value($this->owner);
                 $schima->setSchemaMeta([$key=>$val]);
+            }
             else{
                 $schima->setSchemaMeta([$key=>$this->owner->$value]);
             }
