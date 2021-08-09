@@ -10,7 +10,8 @@
         }
     ],
     "require": {
-        "rabint/base": "*"
+        "rabint/base": "*",
+        "spatie/schema-org"
     },
     "autoload": {
         "psr-4": {
