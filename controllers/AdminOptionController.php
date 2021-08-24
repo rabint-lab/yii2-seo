@@ -251,4 +251,48 @@ class AdminOptionController extends \rabint\controllers\AdminController {
             throw new NotFoundHttpException(\Yii::t('rabint', 'The requested page does not exist.'));
         }
     }
+
+
+    public function actionSpecialOptions(){
+        if($post = Yii::$app->request->post()){
+            //  'description','key_words','about','Writer','genre'
+            self::saveOption($post['key_words'],'keywords');
+
+            self::saveOption($post['description'],'description');
+
+            $content = [
+                'keywords' => $post['key_words'],
+                'description' => $post['description'],
+                'about' => $post['about'],
+                'author' => $post['Writer'],
+                'genre' => $post['genre']
+            ];
+            self::saveOption(json_encode($content),'json-id');
+            //        رکورد با نوع metatag ، و نام keyword و محتوای مربوط به کلمات کلیدی
+//        رکورد با نوع metatag ، و نام description و محتوای مربوط به توضیحات
+//        رکورد با نوع schema ، و نام json-ld و محتوای تجمیع شده از همه فیلد ها به فرمت json-ld
+
+        }
+        return render('special-options/index.php');
+    }
+
+    public static function saveOption($content,$key){
+        $default = Option::defultItems()[$key];
+        $model = new Option();
+        $model->type = $default['type'];
+        if(empty( $default['target'])){
+            $model->content = $content;
+        }else{
+            $array = $default['default'];
+            $array[$default['target']] = $content;
+            $model->content = json_encode($array);
+        }
+        if(!$model->save()){
+            $message[]=$model->errors;
+        }
+        if(empty($message))
+            return true;
+        else
+            return $message;
+    }
 }

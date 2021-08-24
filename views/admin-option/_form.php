@@ -31,7 +31,7 @@ $this->context->layout = "@themeLayouts/full";
 
                             <?= $form->field($model, 'type')->dropDownList(\yii\helpers\ArrayHelper::getColumn(rabint\seo\models\Option::metaTagTypes(),'title')) ?>
 
-                            <?= $form->field($model, 'name')->textInput(['maxlength' => true])->hint(" keyword , description , fallow , index , no_fallow , no_index ")?>
+                            <?php // echo $form->field($model, 'name')->textInput(['maxlength' => true])->hint(" keyword , description , fallow , index , no_fallow , no_index ")?>
 
                             <?= $form->field($model, 'content')->textarea(['rows' => 6]) ?>
 

@@ -84,9 +84,38 @@ static::STATUS_PUBLISH => ['title' => \Yii::t('rabint', 'publish')],
 ];
 }
 
+public static function defultItems(){
+    return[
+        'keywords' => [
+            'title' => Yii::t('rabint','کلمات کلیدی'),
+            'type' => static::META_TYPE_TAG,
+            'default' => [
+                'meta'=>'keywords',
+                'content'=>'',
+            ],
+            'target' => 'content'
+        ],
+        'description' => [
+            'title' => Yii::t('rabint','توضیحات'),
+            'type' => static::META_TYPE_TAG,
+            'default' => [
+                'meta'=>'description',
+                'content'=>'',
+            ],
+            'target' => 'content'
+        ],
+        'json-id' => [
+            'title' => Yii::t('rabint','جیسان آی دی'),
+            'type'=>static::META_TYPE_SCHEMA,
+            'default' => [],
+            'target' => null
+        ]
+    ];
+}
+
 public static function metaTagTypes(){
     return [
-        static::META_TYPE_TAG => ['title'=>Yii::t('rabint','تگ')],
+        static::META_TYPE_TAG => ['title' => Yii::t('rabint','تگ')],
         static::META_TYPE_SCHEMA => ['title'=>Yii::t('rabint','اسکیما')],
         static::META_TYPE_SCRIPT => ['title'=>Yii::t('rabint','اسکریپت')],
     ];

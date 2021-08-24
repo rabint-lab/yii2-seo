@@ -42,7 +42,7 @@ class Module extends \yii\base\Module
                     ],
                     [
                         'label' => \Yii::t('rabint', 'تنظیمات اختصاصی'),
-                        'url' => ['/account/site'],
+                        'url' => ['/seo/admin-option/special-options'],
                         'visible' => \rabint\helpers\user::can('manager'),
                         'icon' => '<i class="far fa-circle"></i>',
                     ],
