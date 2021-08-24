@@ -44,6 +44,9 @@ return [
     [
         'class'=>'\kartik\grid\DataColumn',
         'attribute'=>'type',
+        'value'=>function($model){
+            return \rabint\seo\models\Option::metaTagTypes()[$model->type]['title'];
+        }
     ],
     [
         'class'=>'\kartik\grid\DataColumn',
@@ -56,6 +59,9 @@ return [
     [
         'class'=>'\kartik\grid\DataColumn',
         'attribute'=>'location',
+        'value'=>function($model){
+            return $model->location == 1 ? Yii::t('rabint','هدر'):Yii::t('rabint','فوتر');
+        }
     ],
     // [
         // 'class'=>'\kartik\grid\DataColumn',

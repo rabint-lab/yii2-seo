@@ -66,15 +66,27 @@ $this->context->layout = "@themeLayouts/full";
                         //     ],
                                 'id',
             'route',
-            'type',
+                        [
+                            'class'=>'\kartik\grid\DataColumn',
+                            'attribute'=>'type',
+                            'value'=>function($model){
+                                return \rabint\seo\models\Option::metaTagTypes()[$model->type]['title'];
+                            }
+                        ],
             'name',
             'content:ntext',
-            'location',
-            'linked',
-            'created_at',
-            'updated_at',
-            'created_by',
-            'updated_by',
+                        [
+                            'class'=>'\kartik\grid\DataColumn',
+                            'attribute'=>'location',
+                            'value'=>function($model){
+                                return $model->location == 1 ? Yii::t('rabint','هدر'):Yii::t('rabint','فوتر');
+                            }
+                        ],
+//                        'linked',
+//            'created_at',
+//            'updated_at',
+//            'created_by',
+//            'updated_by',
                     ],
                     ]) ?>
 
