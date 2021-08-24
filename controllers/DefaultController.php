@@ -1,6 +1,6 @@
 <?php
 
-namespace rabint\attachment\controllers;
+namespace rabint\seo\controllers;
 
 use Yii;
 use rabint\attachment\models\Attachment;
