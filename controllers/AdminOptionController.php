@@ -256,10 +256,6 @@ class AdminOptionController extends \rabint\controllers\AdminController {
     public function actionSpecialOptions(){
         if($post = Yii::$app->request->post()){
             //  'description','key_words','about','Writer','genre'
-            self::saveOption($post['key_words'],'keywords');
-
-            self::saveOption($post['description'],'description');
-
             $content = [
                 'keywords' => $post['key_words'],
                 'description' => $post['description'],
@@ -267,19 +263,32 @@ class AdminOptionController extends \rabint\controllers\AdminController {
                 'author' => $post['Writer'],
                 'genre' => $post['genre']
             ];
-            self::saveOption(json_encode($content),'json-id');
-            //        رکورد با نوع metatag ، و نام keyword و محتوای مربوط به کلمات کلیدی
-//        رکورد با نوع metatag ، و نام description و محتوای مربوط به توضیحات
-//        رکورد با نوع schema ، و نام json-ld و محتوای تجمیع شده از همه فیلد ها به فرمت json-ld
-
+            $keyWords=self::saveOption($post['key_words'],'home-meta-keywords');
+            $description=self::saveOption($post['description'],'home-meta-description');
+            $jsonId=self::saveOption(json_encode($content),'home-schema-json-id');
+            if(!($keyWords===true && $description===true && $jsonId===true)){
+                $message = [];
+                $message[] = is_array($keyWords)?$keyWords:[];
+                $message[] = is_array($description)?$description:[];
+                $message[] = is_array($jsonId)?$jsonId:[];
+                Yii::$app->session->setFlash('danger', \rabint\helpers\str::modelErrors($message));
+            }else{
+                Yii::$app->session->setFlash('success', Yii::t('rabint','موارد با موفقیت ثبت شد!'));
+            }
         }
         return render('special-options/index.php');
     }
 
     public static function saveOption($content,$key){
         $default = Option::defultItems()[$key];
-        $model = new Option();
+        $model=Option::find()->where(['name'=>$default['name']])->one();
+        if($model==null){
+            $model = new Option();
+        }
+        $model->name = $default['name'];
         $model->type = $default['type'];
+        $model->route = $default['route'];
+        $model->location = $default['location'];
         if(empty( $default['target'])){
             $model->content = $content;
         }else{
@@ -290,9 +299,9 @@ class AdminOptionController extends \rabint\controllers\AdminController {
         if(!$model->save()){
             $message[]=$model->errors;
         }
-        if(empty($message))
-            return true;
-        else
+        if(!empty($message)){
             return $message;
+        }
+        return true;
     }
 }

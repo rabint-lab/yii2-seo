@@ -2,8 +2,10 @@
 
 namespace rabint\seo\models;
 
+use GuzzleHttp\Psr7\Uri;
 use Yii;
 use common\models\User;
+use yii\helpers\Url;
 
 /**
 * This is the model class for table "seo_option".
@@ -31,6 +33,10 @@ const STATUS_PUBLISH = 2;
 const META_TYPE_TAG = 1;
 const META_TYPE_SCHEMA = 2;
 const META_TYPE_SCRIPT = 3;
+
+const LOCATION_NO = 0;
+const LOCATION_HEAD = 1;
+const LOCATION_FOOTER = 2;
 
     /**
 * @inheritdoc
@@ -84,29 +90,46 @@ static::STATUS_PUBLISH => ['title' => \Yii::t('rabint', 'publish')],
 ];
 }
 
+    public static function locations() {
+        return [
+            static::LOCATION_NO => ['title' => \Yii::t('rabint', 'عدم جایگاه')],
+            static::LOCATION_HEAD => ['title' => \Yii::t('rabint', 'سر صفحه')],
+            static::LOCATION_FOOTER => ['title' => \Yii::t('rabint', 'پاورقی')],
+        ];
+    }
+
 public static function defultItems(){
     return[
-        'keywords' => [
+        'home-meta-keywords' => [
             'title' => Yii::t('rabint','کلمات کلیدی'),
+            'name' => 'home-meta-keywords',
             'type' => static::META_TYPE_TAG,
+            'location'=> self::LOCATION_HEAD,
+            'route'=>'*',
             'default' => [
                 'meta'=>'keywords',
                 'content'=>'',
             ],
             'target' => 'content'
         ],
-        'description' => [
+        'home-meta-description' => [
             'title' => Yii::t('rabint','توضیحات'),
+            'name' => 'home-meta-description',
             'type' => static::META_TYPE_TAG,
+            'location'=> self::LOCATION_HEAD,
+            'route'=>'*',
             'default' => [
                 'meta'=>'description',
                 'content'=>'',
             ],
             'target' => 'content'
         ],
-        'json-id' => [
+        'home-schema-json-id' => [
             'title' => Yii::t('rabint','جیسان آی دی'),
+            'name' => 'home-schema-json-id',
             'type'=>static::META_TYPE_SCHEMA,
+            'location'=> self::LOCATION_HEAD,
+            'route'=>'__HOME__',
             'default' => [],
             'target' => null
         ]
@@ -181,5 +204,30 @@ return parent::beforeSave($insert);
     //    $publishQuery->showNotActiveToOwners=true;
     //    return $publishQuery;
     //}
+    public static function render($route,$location){
+        $options = static::find()
+            ->AndWhere(['location'=>$location])
+            ->AndWhere(['not in','route',['']])
+            ->all();
+        $return = '';
+        foreach ($options as $item){
+            if($item->route == '*'||strpos($route,$item->route)||(Url::canonical()==Url::base(true).$route&&$item->route=='__HOME__'))
+                $return .= static::MakeTag($item);
+        }
+        return $return;
+    }
 
+    private static function MakeTag($object){
+        $content = json_decode($object->content);
+        switch ($object->type){
+            case self::META_TYPE_TAG:
+                    return '<meta name="'.$content->meta.'" content="'.$content->content.'">'.PHP_EOL;
+                break;
+            case self::META_TYPE_SCHEMA:
+                    return '<script type="application/ld+json">'.$object->content.'</script>'.PHP_EOL;
+                break;
+            case self::META_TYPE_SCRIPT:
+                break;
+        }
+    }
 }

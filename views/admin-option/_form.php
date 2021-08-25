@@ -26,16 +26,15 @@ $this->context->layout = "@themeLayouts/full";
                         </div>
 
                         <div class="card-body block-content">
-                            
+                            <?php //echo $form->field($model, 'name')->dropDownList(array_keys(rabint\seo\models\Option::defultItems()))?>
+
                             <?= $form->field($model, 'route')->textInput(['maxlength' => true]) ?>
 
                             <?= $form->field($model, 'type')->dropDownList(\yii\helpers\ArrayHelper::getColumn(rabint\seo\models\Option::metaTagTypes(),'title')) ?>
 
-                            <?php // echo $form->field($model, 'name')->textInput(['maxlength' => true])->hint(" keyword , description , fallow , index , no_fallow , no_index ")?>
-
                             <?= $form->field($model, 'content')->textarea(['rows' => 6]) ?>
 
-                            <?= $form->field($model, 'location')->dropDownList([1=>Yii::t('rabint','هدر'),2=>Yii::t('rabint','فوتر')]) ?>
+                            <?= $form->field($model, 'location')->dropDownList(\yii\helpers\ArrayHelper::getColumn(\rabint\seo\models\Option::locations(),'title')) ?>
 
                             <?php //echo $form->field($model, 'linked')->textInput(['maxlength' => true]) ?>
 
