@@ -227,6 +227,7 @@ return parent::beforeSave($insert);
                     return '<script type="application/ld+json">'.$object->content.'</script>'.PHP_EOL;
                 break;
             case self::META_TYPE_SCRIPT:
+                    return $object->content;
                 break;
         }
     }

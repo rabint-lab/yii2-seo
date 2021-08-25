@@ -276,7 +276,39 @@ class AdminOptionController extends \rabint\controllers\AdminController {
                 Yii::$app->session->setFlash('success', Yii::t('rabint','موارد با موفقیت ثبت شد!'));
             }
         }
-        return render('special-options/index.php');
+        $headerScript = Option::find()->where(['name'=>'header-scripts'])->one();
+        $footerScript = Option::find()->where(['name'=>'footer-scripts'])->one();
+        return render('special-options/index.php',compact(['headerScript','footerScript']));
+    }
+
+    public function actionSaveScripts(){
+//        header-scripts,footer-scripts
+        if($post = Yii::$app->request->post()){
+            $header=Option::find()->where(['name'=>'header-scripts'])->one();
+            if($header==null){
+                $header = new Option();
+                $header->name = 'header-scripts';
+                $header->location = Option::LOCATION_HEAD;
+                $header->type = Option::META_TYPE_SCRIPT;
+                $header->route = '*';
+            }
+            $header->content = $post['header-scripts'];
+            $header->save();
+
+            $footer=Option::find()->where(['name'=>'footer-scripts'])->one();
+            if($footer==null){
+                $footer = new Option();
+                $footer->name = 'footer-scripts';
+                $footer->location = Option::LOCATION_FOOTER;
+                $footer->type = Option::META_TYPE_SCRIPT;
+                $footer->route = '*';
+            }
+            $footer->content = $post['footer-scripts'];
+            $footer->save();
+        }
+        $headerScript = Option::find()->where(['name'=>'header-scripts'])->one();
+        $footerScript = Option::find()->where(['name'=>'footer-scripts'])->one();
+        return render('special-options/index.php',compact(['headerScript','footerScript']));
     }
 
     public static function saveOption($content,$key){

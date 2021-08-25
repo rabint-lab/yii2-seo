@@ -10,9 +10,9 @@
         <?= $this->render('home') ?>
     </div>
     <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-        که فیلد های مانند google webmaster tools و google console و را دارد که باعث ثبت رکورد از نوع script در جدول اولیه خواهد شد
+        <?= $this->render('scripts-tag',compact(['headerScript','footerScript'])) ?>
     </div>
     <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-        صرفا شامل لینک هایی به سایت های بررسی کننده وضعیت سيو و بهینگی سایت است که کاربر با کلیک بروی آنها وارد صفحه آنالیز سایت می شود
+        <?= $this->render('analytics') ?>
     </div>
 </div>
