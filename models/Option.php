@@ -3,6 +3,7 @@
 namespace rabint\seo\models;
 
 use GuzzleHttp\Psr7\Uri;
+use phpDocumentor\Reflection\Types\Self_;
 use Yii;
 use common\models\User;
 use yii\helpers\Url;
@@ -37,6 +38,13 @@ const META_TYPE_SCRIPT = 3;
 const LOCATION_NO = 0;
 const LOCATION_HEAD = 1;
 const LOCATION_FOOTER = 2;
+
+const CONFIG_DIR = "../runtime/seo/config.php";
+const CONFIG_DEFAULT = [
+    'seo'=>true,
+    'pingBack'=>true,
+    'compressAssets'=>true,
+];
 
     /**
 * @inheritdoc
@@ -205,6 +213,8 @@ return parent::beforeSave($insert);
     //    return $publishQuery;
     //}
     public static function render($route,$location){
+        $config = self::getConfigArray();
+        if($config['seo']!=true) return '';
         $options = static::find()
             ->AndWhere(['location'=>$location])
             ->AndWhere(['not in','route',['']])
@@ -231,4 +241,24 @@ return parent::beforeSave($insert);
                 break;
         }
     }
+
+    public static function setConfigArray($array){
+        ob_start();
+        var_export($array);
+        $data = ob_get_contents();
+        ob_end_clean();
+        file_put_contents(self::CONFIG_DIR,'<?php return '.$data.';');
+        chmod(self::CONFIG_DIR,0777);
+        return true;
+    }
+
+    public static function getConfigArray(){
+        if(file_exists(self::CONFIG_DIR)){
+            return include self::CONFIG_DIR;
+        }else{
+            self::setConfigArray(self::CONFIG_DEFAULT);
+        }
+        return self::CONFIG_DEFAULT;
+    }
+
 }

@@ -48,7 +48,7 @@ class Module extends \yii\base\Module
                     ],
                     [
                         'label' => \Yii::t('rabint', 'تنظیمات ماژول'),
-                        'url' => ['/account/admin-category'],
+                        'url' => ['/seo/admin-option/module-option'],
                         'visible' => \rabint\helpers\user::can('manager'),
                         'icon' => '<i class="far fa-circle"></i>',
                     ],

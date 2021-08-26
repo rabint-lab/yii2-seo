@@ -336,4 +336,15 @@ class AdminOptionController extends \rabint\controllers\AdminController {
         }
         return true;
     }
+
+    public function actionModuleOption(){
+        $config = Option::getConfigArray();
+        if($post=Yii::$app->request->post()){
+            $config['pingBack']=isset($post['pingBack'])&&$post['pingBack']==true;
+            $config['seo']=isset($post['seo'])&&$post['seo']==true;
+            $config['compressAssets']=isset($post['compressAssets'])&&$post['compressAssets']==true;
+            Option::setConfigArray($config);
+        }
+        return $this->render('module-option',compact(['config']));
+    }
 }
