@@ -212,20 +212,6 @@ return parent::beforeSave($insert);
     //    $publishQuery->showNotActiveToOwners=true;
     //    return $publishQuery;
     //}
-    public static function render($route,$location){
-        $config = self::getConfigArray();
-        if($config['seo']!=true) return '';
-        $options = static::find()
-            ->AndWhere(['location'=>$location])
-            ->AndWhere(['not in','route',['']])
-            ->all();
-        $return = '';
-        foreach ($options as $item){
-            if($item->route == '*'||strpos($route,$item->route)||(Url::canonical()==Url::base(true).$route&&$item->route=='__HOME__'))
-                $return .= static::MakeTag($item);
-        }
-        return $return;
-    }
 
     private static function MakeTag($object){
         $content = json_decode($object->content);
