@@ -33,6 +33,26 @@ class Module extends \yii\base\Module
                 'label' => \Yii::t('rabint', 'تنظیمات سئو'),
                 'options' => ['class' => 'nav-main-heading'],
                 'visible' => \rabint\helpers\user::can('manager'),
+                'items' => [
+                    [
+                        'label' => \Yii::t('rabint', 'تنظیمات کلی'),
+                        'url' => ['/seo/admin-option/index'],
+                        'visible' => \rabint\helpers\user::can('manager'),
+                        'icon' => '<i class="far fa-circle"></i>',
+                    ],
+                    [
+                        'label' => \Yii::t('rabint', 'تنظیمات اختصاصی'),
+                        'url' => ['/seo/admin-option/special-options'],
+                        'visible' => \rabint\helpers\user::can('manager'),
+                        'icon' => '<i class="far fa-circle"></i>',
+                    ],
+                    [
+                        'label' => \Yii::t('rabint', 'تنظیمات ماژول'),
+                        'url' => ['/seo/admin-option/module-option'],
+                        'visible' => \rabint\helpers\user::can('manager'),
+                        'icon' => '<i class="far fa-circle"></i>',
+                    ],
+                ]
             ],
         ];
     }

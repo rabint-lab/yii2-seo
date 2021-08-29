@@ -1,7 +1,8 @@
 <?php
 
-namespace rabint\attachment\controllers;
+namespace rabint\seo\controllers;
 
+use rabint\seo\models\Option;
 use Yii;
 use rabint\attachment\models\Attachment;
 use rabint\attachment\models\search\attachmentSearch;
@@ -46,6 +47,9 @@ class DefaultController extends \rabint\controllers\DefaultController {
     }
 
     public function pingback_send($title, $url) {
+        $config = Option::getConfigArray();
+        if(!$config['pingBack'])
+            return false;
         $CI = &get_instance();
         $CI->load->library('xmlrpc');
 

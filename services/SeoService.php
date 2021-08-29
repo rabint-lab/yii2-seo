@@ -7,6 +7,7 @@ use PHPUnit\Runner\Exception;
 use rabint\helpers\str;
 use Spatie\SchemaOrg\Schema;
 use Spatie\SchemaOrg\WebSite;
+use yii\helpers\Url;
 
 class SeoService
 {
@@ -111,10 +112,32 @@ class SeoService
         return $return;
     }
 
-    public function renderHeadSeo(){
+    public function renderHeadSeo($url){
         $return = '';
         $return .= $this->renderSchema();
         $return .= $this->renderMeta();
+        $return .= $this->renderOptions($url, \rabint\seo\models\Option::LOCATION_HEAD);
+        return $return;
+    }
+
+    public function renderFooterSeo($url){
+        $return = '';
+        $return .= $this->renderOptions($url, \rabint\seo\models\Option::LOCATION_FOOTER);
+        return $return;
+    }
+
+    public function renderOptions($route,$location){
+        $config = self::getConfigArray();
+        if($config['seo']!=true) return '';
+        $options = static::find()
+            ->AndWhere(['location'=>$location])
+            ->AndWhere(['not in','route',['']])
+            ->all();
+        $return = '';
+        foreach ($options as $item){
+            if($item->route == '*'||strpos($route,$item->route)||(Url::canonical()==Url::base(true).$route&&$item->route=='__HOME__'))
+                $return .= static::MakeTag($item);
+        }
         return $return;
     }
 
