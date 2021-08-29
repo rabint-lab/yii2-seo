@@ -116,6 +116,13 @@ class SeoService
         $return = '';
         $return .= $this->renderSchema();
         $return .= $this->renderMeta();
+        $return .= $this->render(\yii\helpers\Url::current(), \rabint\seo\models\Option::LOCATION_HEAD);
+        return $return;
+    }
+
+    public function renderFooterSeo(){
+        $return = '';
+        $return .= $this->render(\yii\helpers\Url::current(), \rabint\seo\models\Option::LOCATION_FOOTER);
         return $return;
     }
 
