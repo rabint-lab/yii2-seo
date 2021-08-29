@@ -112,21 +112,21 @@ class SeoService
         return $return;
     }
 
-    public function renderHeadSeo(){
+    public function renderHeadSeo($url){
         $return = '';
         $return .= $this->renderSchema();
         $return .= $this->renderMeta();
-        $return .= $this->render(\yii\helpers\Url::current(), \rabint\seo\models\Option::LOCATION_HEAD);
+        $return .= $this->renderOptions($url, \rabint\seo\models\Option::LOCATION_HEAD);
         return $return;
     }
 
-    public function renderFooterSeo(){
+    public function renderFooterSeo($url){
         $return = '';
-        $return .= $this->render(\yii\helpers\Url::current(), \rabint\seo\models\Option::LOCATION_FOOTER);
+        $return .= $this->renderOptions($url, \rabint\seo\models\Option::LOCATION_FOOTER);
         return $return;
     }
 
-    public static function render($route,$location){
+    public function renderOptions($route,$location){
         $config = self::getConfigArray();
         if($config['seo']!=true) return '';
         $options = static::find()
