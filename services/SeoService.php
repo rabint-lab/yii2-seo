@@ -3,6 +3,7 @@ namespace rabint\seo\services;
 
 
 use app\modules\account\models\Site;
+use rabint\seo\models\Option;
 use PHPUnit\Runner\Exception;
 use rabint\helpers\str;
 use Spatie\SchemaOrg\Schema;
@@ -127,9 +128,9 @@ class SeoService
     }
 
     public function renderOptions($route,$location){
-        $config = self::getConfigArray();
+        $config = Option::getConfigArray();
         if($config['seo']!=true) return '';
-        $options = static::find()
+        $options = Option::find()
             ->AndWhere(['location'=>$location])
             ->AndWhere(['not in','route',['']])
             ->all();
