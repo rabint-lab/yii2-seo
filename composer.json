@@ -11,7 +11,8 @@
     ],
     "require": {
         "rabint/base": "*",
-        "spatie/schema-org": "*"
+        "spatie/schema-org": "*",
+      "ext-json": "*"
     },
     "autoload": {
         "psr-4": {
