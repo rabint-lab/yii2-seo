@@ -292,8 +292,10 @@ class AdminOptionController extends \rabint\controllers\AdminController {
                 $header->type = Option::META_TYPE_SCRIPT;
                 $header->route = '*';
             }
-            $header->content = $post['header-scripts'];
-            $header->save();
+            $header->content = $_POST['header-scripts']??'';
+            if(!$header->save()){
+                Yii::$app->session->setFlash('warnig',$header->errors);
+            }
 
             $footer=Option::find()->where(['name'=>'footer-scripts'])->one();
             if($footer==null){
@@ -303,8 +305,10 @@ class AdminOptionController extends \rabint\controllers\AdminController {
                 $footer->type = Option::META_TYPE_SCRIPT;
                 $footer->route = '*';
             }
-            $footer->content = $post['footer-scripts'];
-            $footer->save();
+            $footer->content = $_POST['footer-scripts']??'';
+            if(!$footer->save()){
+                Yii::$app->session->setFlash('warnig',$footer->errors);
+            }
         }
         $headerScript = Option::find()->where(['name'=>'header-scripts'])->one();
         $footerScript = Option::find()->where(['name'=>'footer-scripts'])->one();

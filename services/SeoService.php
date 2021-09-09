@@ -137,7 +137,7 @@ class SeoService
         $return = '';
         foreach ($options as $item){
             if($item->route == '*'||strpos($route,$item->route)||(Url::canonical()==Url::base(true).$route&&$item->route=='__HOME__'))
-                $return .= static::MakeTag($item);
+                $return .= Option::MakeTag($item);
         }
         return $return;
     }

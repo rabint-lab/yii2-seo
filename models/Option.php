@@ -200,9 +200,10 @@ return parent::beforeSave($insert);
 
 
     /**
-    * @inheritdoc
-    * @return \rabint\models\query\PublishQuery the active query used by this AR class.
-    */
+     * @inheritdoc
+     * @param $object
+     * @return string
+     */
     //public static function find()
     //{
     //    $publishQuery = new \rabint\models\query\PublishQuery(get_called_class());
@@ -213,7 +214,7 @@ return parent::beforeSave($insert);
     //    return $publishQuery;
     //}
 
-    private static function MakeTag($object){
+    public static function MakeTag($object){
         $content = json_decode($object->content);
         switch ($object->type){
             case self::META_TYPE_TAG:
