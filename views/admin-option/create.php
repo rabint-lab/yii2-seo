@@ -17,6 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h2 class="ajaxModalTitle" style="display: none"><?=  $this->title; ?></h2>
     <?= $this->render('_form', [
         'model' => $model,
+        'url' => $url
     ]) ?>
 
 </div>

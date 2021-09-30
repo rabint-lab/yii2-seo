@@ -28,7 +28,7 @@ $this->context->layout = "@themeLayouts/full";
                         <div class="card-body block-content">
                             <?php //echo $form->field($model, 'name')->dropDownList(array_keys(rabint\seo\models\Option::defultItems()))?>
 
-                            <?= $form->field($model, 'route')->textInput(['maxlength' => true]) ?>
+                            <?= $form->field($model, 'route')->textInput(['maxlength' => true,'value'=>$url??null]) ?>
 
                             <?= $form->field($model, 'type')->dropDownList(\yii\helpers\ArrayHelper::getColumn(rabint\seo\models\Option::metaTagTypes(),'title')) ?>
 
