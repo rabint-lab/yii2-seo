@@ -139,6 +139,8 @@ class AdminOptionController extends \rabint\controllers\AdminController {
 
         $request = Yii::$app->request;
 
+        $url = $request->get('url')??'';
+
         if ($model->load(Yii::$app->request->post())) {
             if ($model->save()) {
                 Yii::$app->session->setFlash('success',  Yii::t('rabint', 'Item successfully created.'));
@@ -161,8 +163,14 @@ class AdminOptionController extends \rabint\controllers\AdminController {
                 Yii::$app->session->setFlash('danger', \rabint\helpers\str::modelErrors($model->errors));
             }
         }
+        if(!empty($url)){
+            $redirect = Option::checkIsExist($url);
+            if(!empty($redirect))
+                $this->redirect($redirect);
+        }
         return $this->render('create', [
             'model' => $model,
+            'url' => $url
         ]);
     }
 

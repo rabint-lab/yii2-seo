@@ -248,4 +248,14 @@ return parent::beforeSave($insert);
         return self::CONFIG_DEFAULT;
     }
 
+    public static function checkIsExist($route){
+        $re = self::find()
+            ->where(['route'=>$route])
+            ->one();
+        if($re==null)
+            return null;
+        else
+            return Url::to(['/seo/admin-option/update','id'=>$re->id]);
+    }
+
 }
