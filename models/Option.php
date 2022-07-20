@@ -39,11 +39,14 @@ const LOCATION_NO = 0;
 const LOCATION_HEAD = 1;
 const LOCATION_FOOTER = 2;
 
+const BASE_RUNTIME_DIR = "../runtime/seo";
+
 const CONFIG_DIR = "../runtime/seo/config.php";
 const CONFIG_DEFAULT = [
     'seo'=>true,
     'pingBack'=>true,
     'compressAssets'=>true,
+    'index'=>true,
 ];
 
     /**
@@ -234,6 +237,9 @@ return parent::beforeSave($insert);
         var_export($array);
         $data = ob_get_contents();
         ob_end_clean();
+        if(!file_exists(self::BASE_RUNTIME_DIR)){
+            mkdir(self::BASE_RUNTIME_DIR,0777,true);
+        }
         file_put_contents(self::CONFIG_DIR,'<?php return '.$data.';');
         chmod(self::CONFIG_DIR,0777);
         return true;

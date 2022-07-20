@@ -50,19 +50,6 @@ class SeoService
     }
 
     /**
-     * @param array $data
-     * @return SeoService
-     */
-    public function setSchemaMeta($data=[]){
-        $object = self::getSchema();
-        foreach ($data as $key=>$value){
-            $object->$key($value);
-        }
-        self::setSchema($object);
-        return $this;
-    }
-
-    /**
      * @return mixed
      */
     public function renderSchema(){
@@ -101,6 +88,11 @@ class SeoService
         return true;
     }
 
+    public function setSeoMetaArray($array){
+        self::$meta = array_merge(self::$meta,$array);
+        return true;
+    }
+
     /**
      * @return string
      */
@@ -113,15 +105,25 @@ class SeoService
         return $return;
     }
 
-    public function renderHeadSeo($url){
+    public function renderHeadSeo($url=null){
+        if(empty($url)){
+            $url = \rabint\helpers\uri::current();
+        }
+        $option = Option::getConfigArray();
         $return = '';
         $return .= $this->renderSchema();
         $return .= $this->renderMeta();
         $return .= $this->renderOptions($url, \rabint\seo\models\Option::LOCATION_HEAD);
+        if(isset($option['index'])&&!$option['index']){
+            $return .= "<meta name=\"robots\" content=\"[noindex, nofollow]\">";
+        }
         return $return;
     }
 
-    public function renderFooterSeo($url){
+    public function renderFooterSeo($url=null){
+        if(empty($url)){
+            $url = \rabint\helpers\uri::current();
+        }
         $return = '';
         $return .= $this->renderOptions($url, \rabint\seo\models\Option::LOCATION_FOOTER);
         return $return;
@@ -136,19 +138,10 @@ class SeoService
             ->all();
         $return = '';
         foreach ($options as $item){
-            if($item->route == '*'||strpos($route,$item->route)||(Url::canonical()==Url::base(true).$route&&$item->route=='__HOME__'))
+            if($item->route == '*'||strpos($route,$item->route)||(Url::current()==config('defaultRoute')&&$item->route=='__HOME__'))
                 $return .= Option::MakeTag($item);
         }
         return $return;
     }
-
-//    public function test(){
-//        $object=\Spatie\SchemaOrg\Schema::webSite();
-//        $object->url();
-//        $object->name();
-//        $object->description();
-//        $object->about();
-//        $object->comment();
-//    }
 
 }

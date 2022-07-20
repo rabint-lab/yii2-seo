@@ -6,6 +6,12 @@ $form = ActiveForm::begin(); ?>
     <div class="row">
         <div class="col-12">
             <div class="form-group">
+                <label><?=Yii::t('rabint','عنوان')?></label>
+                <?= \yii\helpers\Html::textInput('name','',['class'=>'form-control']) ?>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="form-group">
                 <label><?=Yii::t('rabint','توضیحات')?></label>
                 <?= \yii\helpers\Html::textInput('description','',['class'=>'form-control']) ?>
             </div>
@@ -23,6 +29,10 @@ $form = ActiveForm::begin(); ?>
             </div>
         </div>
         <div class="col-12">
+            <div class="form-group">
+                <label><?=Yii::t('rabint','نوع')?></label>
+                <?= \yii\helpers\Html::dropDownList('Writer_type','Person',['Person'=>Yii::t('rabint','شخصی'),'Organization'=>Yii::t('rabint','شرکتی')],['class'=>'form-control']) ?>
+            </div>
             <div class="form-group">
                 <label><?=Yii::t('rabint','نویسنده')?></label>
                 <?= \yii\helpers\Html::textInput('Writer','',['class'=>'form-control']) ?>

@@ -9,18 +9,23 @@ $form = ActiveForm::begin(); ?>
             <div class="col-12">
                 <div class="form-group">
                     <?= \yii\helpers\Html::checkbox('pingBack',isset($config['pingBack'])?$config['pingBack']:false) ?>
-                    <label><?=Yii::t('rabint','pingBack')?></label>
+                    <label><?=Yii::t('rabint','آیا میخواهید بروزرسانی سایت را به اطلاع موتور های جستجو برسانید؟(پینگ بک)')?></label>
                 </div>
             </div>
             <div class="col-12">
                 <div class="form-group">
                     <?= \yii\helpers\Html::checkbox('seo',isset($config['seo'])?$config['seo']:false) ?>
-                    <label><?=Yii::t('rabint','SEO')?></label>
+                    <label><?=Yii::t('rabint','آیا میخواهید متا تگ ها و اسکیما ها اعمال شوند؟')?></label>
                 </div>
             </div><div class="col-12">
                 <div class="form-group">
                     <?= \yii\helpers\Html::checkbox('compressAssets',isset($config['compressAssets'])?$config['compressAssets']:false) ?>
-                    <label><?=Yii::t('rabint','فشرده سازی Asset')?></label>
+                    <label><?=Yii::t('rabint','آیا asset ها فشرده شوند؟')?></label>
+                </div>
+            </div><div class="col-12">
+                <div class="form-group">
+                    <?= \yii\helpers\Html::checkbox('index',isset($config['index'])?$config['index']:false) ?>
+                    <label><?=Yii::t('rabint','آیا سایت به موتور های جستجو نمایش داده شود؟')?></label>
                 </div>
             </div>
             <div class="col-12">

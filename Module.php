@@ -31,24 +31,25 @@ class Module extends \yii\base\Module
         return [
             [
                 'label' => \Yii::t('rabint', 'تنظیمات سئو'),
-                'options' => ['class' => 'nav-main-heading'],
+                'icon' => '<i class="fas fa-chart-line"></i>',
+                'url' => '#',
                 'visible' => \rabint\helpers\user::can('manager'),
                 'items' => [
                     [
-                        'label' => \Yii::t('rabint', 'تنظیمات کلی'),
-                        'url' => ['/seo/admin-option/index'],
-                        'visible' => \rabint\helpers\user::can('manager'),
-                        'icon' => '<i class="far fa-circle"></i>',
-                    ],
-                    [
-                        'label' => \Yii::t('rabint', 'تنظیمات اختصاصی'),
+                        'label' => \Yii::t('rabint', 'اطلاعات سئو'),
                         'url' => ['/seo/admin-option/special-options'],
                         'visible' => \rabint\helpers\user::can('manager'),
                         'icon' => '<i class="far fa-circle"></i>',
                     ],
                     [
-                        'label' => \Yii::t('rabint', 'تنظیمات ماژول'),
+                        'label' => \Yii::t('rabint', 'تنظیمات سئو'),
                         'url' => ['/seo/admin-option/module-option'],
+                        'visible' => \rabint\helpers\user::can('manager'),
+                        'icon' => '<i class="far fa-circle"></i>',
+                    ],
+                    [
+                        'label' => \Yii::t('rabint', 'متاتگ ها(پیشرفته)'),
+                        'url' => ['/seo/admin-option/index'],
                         'visible' => \rabint\helpers\user::can('manager'),
                         'icon' => '<i class="far fa-circle"></i>',
                     ],

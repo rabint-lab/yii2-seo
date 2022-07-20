@@ -2,7 +2,6 @@
 
 namespace rabint\seo;
 
-use rabint\seo\models\Option;
 use Yii;
 use yii\base\Behavior;
 use yii\db\ActiveRecord;
@@ -19,7 +18,7 @@ class SeoModelBehavior extends Behavior
 {
 
     /**
-     *
+     * @deprecated
      * @var Query
      */
     public $query = NULL;
@@ -94,9 +93,7 @@ class SeoModelBehavior extends Behavior
             }
         }
         /* pingback ========================================================= */
-        $config = Option::getConfigArray();
-        if(!$config['pingBack']||!method_exists($model,'getPingBackParams'))
-            return false;
+
         $pingback_servers = \rabint\seo\Module::getConfig('pingback_servers');
         $xmlrpc = new classes\Xmlrpc;
         foreach ($pingback_servers as $pingback_server) {
@@ -113,3 +110,4 @@ class SeoModelBehavior extends Behavior
     }
 
 }
+

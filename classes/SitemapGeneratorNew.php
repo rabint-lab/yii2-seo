@@ -3,6 +3,7 @@
 namespace rabint\seo\classes;
 
 use Yii;
+use yii\helpers\Url;
 
 /**
  *    $sitemap = new ArticlesSitemap(); // must implement a SitemapInterface
@@ -15,7 +16,7 @@ use Yii;
  *
  * @package common\components
  */
-class SitemapGenerator extends \yii\base\BaseObject
+class SitemapGeneratorNew extends \yii\base\BaseObject
 {
 
     /**
@@ -50,11 +51,12 @@ class SitemapGenerator extends \yii\base\BaseObject
      */
     public $maxUrlsCount = 45000;
 
+    public $name;
     /**
      * @var array stores information about the created site maps
      */
     protected $items = [];
-    protected $createdSitemaps = [];
+    public $createdSitemaps = [];
 
     function addItem($sitemap, $item)
     {
@@ -62,19 +64,17 @@ class SitemapGenerator extends \yii\base\BaseObject
         return TRUE;
     }
 
+    public function getFileName(){
+        return Yii::getAlias($this->dir) . "/sitemap-". $this->name.".xml";
+    }
+    public function getIndexFile(){
+        return \Yii::getAlias('@webroot')."/". $this->indexFilename;
+    }
+
     function addItemToGeneratedSitemap($sitemap, $item)
     {
-//            $siteMapName = 'sitemap.' . $sitemap . '.xml';
-        $siteMapName = 'sitemap';
-        $multipleSitemapFlag = false;
         $entity = static::generateEntity($item) . PHP_EOL;
-        $filename = $multipleSitemapFlag ? "{$siteMapName}-{$i}.xml" : "{$siteMapName}.xml";
-        $fullFilename = Yii::getAlias($this->dir) . '/' . $filename;
-
-//        var_dump($fullFilename);
-
-        $lines = file($fullFilename);
-//        var_dump($lines);
+        $lines = file($this->fileName);
         $output = '';
         foreach ($lines as $line => $data) {
             if ($line == 7) {
@@ -82,32 +82,28 @@ class SitemapGenerator extends \yii\base\BaseObject
             }
             $output .= $data;
         }
-
-//        var_dump($output);
-//        
-
-
-        file_put_contents($fullFilename, $output);
-
-//                        die('=====');
-
-        $this->ping(\rabint\helpers\uri::home() . '/' . $this->indexFilename);
-
+        file_put_contents($this->fileName, $output);
+        $this->updateIndexMod();
         return TRUE;
     }
 
+    public function checkIsFile(){
+        $file = Yii::getAlias($this->dir) . '/' . $this->name;
+        if(!file_exists($file)){
+            $this->createSitemap($this->name);
+        }
+        return true;
+    }
     /**
      * Creating a sitemap
      */
     public function generate()
     {
-        foreach ($this->sitemaps as $sitemap => $filename) {
-            $this->createSitemap($sitemap, $filename);
-        }
+        $this->checkIsFile();
         if ($this->generateIndex) {
             $this->createIndexSitemap();
         }
-        $this->ping(\rabint\helpers\uri::home() . '/' . $this->indexFilename);
+        $this->updateIndexMod();
     }
 
     /**
@@ -117,29 +113,60 @@ class SitemapGenerator extends \yii\base\BaseObject
      */
     protected function createIndexSitemap()
     {
-        $sitemapIndex = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
-        $sitemapIndex .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . PHP_EOL;
+        $indexFile = Yii::getAlias($this->dir) . '/' . $this->indexFilename;
         $baseUrl = \rabint\helpers\uri::home();
+        if(file_exists($indexFile)){
+            $lines = file($indexFile);
 
-        $sitemaps = $this->createdSitemaps;
-        self::sortByLastmod($sitemaps);
+            $sitemaps = $this->createdSitemaps;
 
-        foreach ($sitemaps as $sitemap) {
-            $sitemapIndex .= '    <sitemap>' . PHP_EOL;
-            $sitemapIndex .= "        <loc>$baseUrl/$sitemap[loc]</loc>" . PHP_EOL;
+            self::sortByLastmod($sitemaps);
+            foreach ($sitemaps as $sitemap) {
+                $entry[] = '    <sitemap>' . PHP_EOL;
+                $entry[] = "        <loc>$baseUrl$sitemap[loc]</loc>" . PHP_EOL;
 
-            if (!empty($sitemap['lastmodTimestamp'])) {
-                $lastmod = date($this->lastmodFormat, $sitemap['lastmodTimestamp']);
-                $sitemapIndex .= "        <lastmod>$lastmod</lastmod>" . PHP_EOL;
+                if (!empty($sitemap['lastmodTimestamp'])) {
+                    $lastmod = date($this->lastmodFormat, $sitemap['lastmodTimestamp']);
+                    $entry[] = "        <lastmod>$lastmod</lastmod>" . PHP_EOL;
+                }
+
+                $entry[] = '    </sitemap>' . PHP_EOL;
+            }
+            $output = '';
+            foreach ($lines as $key=>$item){
+                if($key==2){
+                    foreach ($entry as $val){
+                        $output.= $val;
+                    }
+                }
+                $output.= $item;
+            }
+            file_put_contents($indexFile, $output);
+            return $output;
+        }else{
+
+            $sitemapIndex = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
+            $sitemapIndex .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . PHP_EOL;
+
+            $sitemaps = $this->createdSitemaps;
+
+            self::sortByLastmod($sitemaps);
+            foreach ($sitemaps as $sitemap) {
+                $sitemapIndex .= '    <sitemap>' . PHP_EOL;
+                $sitemapIndex .= "        <loc>$baseUrl$sitemap[loc]</loc>" . PHP_EOL;
+
+                if (!empty($sitemap['lastmodTimestamp'])) {
+                    $lastmod = date($this->lastmodFormat, $sitemap['lastmodTimestamp']);
+                    $sitemapIndex .= "        <lastmod>$lastmod</lastmod>" . PHP_EOL;
+                }
+
+                $sitemapIndex .= '    </sitemap>' . PHP_EOL;
             }
 
-            $sitemapIndex .= '    </sitemap>' . PHP_EOL;
+            $sitemapIndex .= '</sitemapindex>';
+            $this->createSitemapFile($this->indexFilename, $sitemapIndex);
+            return $sitemapIndex;
         }
-
-        $sitemapIndex .= '</sitemapindex>';
-        $this->createSitemapFile($this->indexFilename, $sitemapIndex);
-
-        return $sitemapIndex;
     }
 
     /**
@@ -151,10 +178,10 @@ class SitemapGenerator extends \yii\base\BaseObject
     protected function createSitemap($sitemap, $siteMapName = '')
     {
         if (empty($siteMapName)) {
-            $siteMapName = 'sitemap.' . $sitemap . '.xml';
+            $siteMapName = 'sitemap-' . $sitemap;
         }
 
-        $urls = $this->items[$sitemap];
+        $urls = $this->items[$sitemap]??[];
         if ($this->neetSort) {
             self::sortByLastmod($urls);
         }
@@ -284,65 +311,32 @@ EOT;
         return $url;
     }
 
-    /* =================================================================== */
-
-    function pingSitemap($sitemaps = null)
-    {
-        $baseUrl = \rabint\helpers\uri::home();
-        if ($sitemaps === NULL) {
-            $this->ping($baseUrl . '/' . $this->indexFilename);
-            //sitemapindex
-        } else {
-            foreach ($sitemaps as $sitemap => $filename) {
-                $this->ping($sitemap);
-            }
-        }
-    }
-
-    function ping($url_xml, $search_engines = NULL)
-    {
-        $statuses = array();
-        if (is_array($search_engines)) {
-            foreach ($search_engines AS $engine) {
-                $status = 0;
-                if ($fp = @fsockopen($engine['host'], 80)) {
-                    $engine['url'] = empty($engine['url']) ? "/ping?sitemap=" : $engine['url'];
-
-                    $req = 'GET ' . $engine['url'] .
-                        urlencode($url_xml) . " HTTP/1.1\r\n" .
-                        "Host: " . $engine['host'] . "\r\n" .
-                        config('SEO.sitemap.sitemaps_user_agent') .
-                        "Connection: Close\r\n\r\n";
-                    fwrite($fp, $req);
-                    while (!feof($fp)) {
-                        if (@preg_match('~^HTTP/\d\.\d (\d+)~i', fgets($fp, 128), $m)) {
-                            $status = intval($m[1]);
-                            break;
-                        }
-                    }
-                    fclose($fp);
-                }
-                $statuses[] = array("host" => $engine['host'], "status" => $status, "request" => $req);
-            }
+    function getGooglePing(){
+        $googleUrlRequest = 'https://www.google.com/webmasters/sitemaps/ping?sitemap=';
+        $requestLink = $googleUrlRequest.Url::base(true)."/".$this->indexFilename;
+        $response = file_get_contents($requestLink);
+        $return = strpos($response,"Sitemap Notification Received")>0?true:false;
+        //set log
+        $path = Yii::getAlias('@runtime/seo/pingBackLogs');
+        file_put_contents($path,date('Y/m/d H:i:s',time()).($return?" Status Success":" Status Error ".$requestLink).PHP_EOL,FILE_APPEND);
+        if(!$return){
+            Yii::$app->session->setFlash('warning',Yii::t('rabint','درخواست پینگ بک با مشکل مواجه شد.'));
+            $path = Yii::getAlias('@runtime/seo/pingBackErrors');
+            file_put_contents($path,$response.PHP_EOL,FILE_APPEND);
         }
 
-//        if (config('SEO.sitemap.sitemaps_log_http_responses') OR config('SEO.sitemap.sitemaps_debug')) {
-//            foreach ($statuses AS $reponse) {
-//                $message = "Sitemaps: " . $reponse['host'] . " responded with HTTP status " . $reponse['status'];
-//
-//                if (config('SEO.sitemap.sitemaps_log_http_responses')) {
-//                    $level = $reponse['status'] == 200 ? 'debug' : 'error';
-//                    log_message($level, $message);
-//                }
-//
-//                if (config('SEO.sitemap.sitemaps_debug')) {
-//                    echo "<p>" . $message . " after request:</p>\n<pre>" . $reponse['request'] . "</pre>\n\n";
-//                }
-//            }
-//        }
-
-        return $statuses;
+        return $return;
     }
+
+    public function updateIndexMod(){
+        $indexUrl = $this->getIndexFile();
+        chmod($indexUrl,0777);
+        $pattern = "/".$this->name."\.xml(.(?!<\/lastmod>))*<lastmod>(([^\/])*)<\/lastmod>/sm";
+        $date = date('Y-m-d',time());
+        $replacement = $this->name.'.xml</loc>'.PHP_EOL.'<lastmod>'.$date.'</lastmod>';
+        $content = preg_replace($pattern, $replacement, file_get_contents($indexUrl),1);
+        return file_put_contents($indexUrl,$content);
+    }
+
 
 }
- 

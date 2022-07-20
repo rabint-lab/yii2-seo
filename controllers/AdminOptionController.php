@@ -5,6 +5,7 @@ namespace rabint\seo\controllers;
 use Yii;
 use rabint\seo\models\Option;
 use rabint\seo\models\SearchOption;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -18,6 +19,10 @@ class AdminOptionController extends \rabint\controllers\AdminController {
     const BULK_ACTION_SETDRAFT = 'bulk-draft';
     const BULK_ACTION_SETPUBLISH = 'bulk-publish';
     const BULK_ACTION_DELETE = 'bulk-delete';
+
+    const BASE_ROBOT_FILE = "robots-master.txt";
+    const NO_INDEX_ROBOT_CONTENT = "User-agent: *".PHP_EOL."Disallow: *";
+    const BASE_ROBOT_CONTENT = "User-agent: *".PHP_EOL."Disallow: ";
     /**
      * @inheritdoc
      */
@@ -265,10 +270,15 @@ class AdminOptionController extends \rabint\controllers\AdminController {
         if($post = Yii::$app->request->post()){
             //  'description','key_words','about','Writer','genre'
             $content = [
+                'name' => $post['name'],
+                'url'=> Url::home(true),
                 'keywords' => $post['key_words'],
                 'description' => $post['description'],
                 'about' => $post['about'],
-                'author' => $post['Writer'],
+                'author' =>[
+                    "ClassName"=>$post['Writer_type'],
+                    "name"=>$post['Writer'],
+                ],
                 'genre' => $post['genre']
             ];
             $keyWords=self::saveOption($post['key_words'],'home-meta-keywords');
@@ -355,8 +365,27 @@ class AdminOptionController extends \rabint\controllers\AdminController {
             $config['pingBack']=isset($post['pingBack'])&&$post['pingBack']==true;
             $config['seo']=isset($post['seo'])&&$post['seo']==true;
             $config['compressAssets']=isset($post['compressAssets'])&&$post['compressAssets']==true;
+            $config['index']=isset($post['index'])&&$post['index']==true;
+            self::setRobotFile($config['index']);
             Option::setConfigArray($config);
         }
         return $this->render('module-option',compact(['config']));
+    }
+
+    public static function setRobotFile($flag){
+        $dir = Yii::getAlias('@web');
+        if(!file_exists($dir."robots.txt")){
+            file_put_contents($dir."robots.txt",self::BASE_ROBOT_CONTENT);
+        }
+        $robot = !file_exists($dir.self::BASE_ROBOT_FILE);
+        if($flag==$robot) return true;
+        if($flag){
+            if(file_exists($dir."robots.txt"))
+                unlink($dir."robots.txt");
+            rename($dir.self::BASE_ROBOT_FILE,$dir."robots.txt");
+        }else{
+            rename("robots.txt",$dir.self::BASE_ROBOT_FILE);
+            file_put_contents($dir."robots.txt",self::NO_INDEX_ROBOT_CONTENT);
+        }
     }
 }
