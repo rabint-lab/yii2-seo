@@ -2,7 +2,7 @@
     "name": "rabint/seo",
     "type": "library",
     "description": "rabint seo behavior",
-    "license": "rabint",
+    "license": "MIT",
     "authors": [{
             "name": "rabint",
             "email": "info@rabint.ir",
